@@ -353,9 +353,6 @@ def calculating(hosts: object, cluster_obj: object) -> list:
         for vm in hosts[host[0]].values():
             h0_mem_load = (nodes[host[0]]["mem"] - vm["mem"]) / nodes[host[0]]["maxmem"]
             h0_deviation = h0_mem_load - average if h0_mem_load > average else average - h0_mem_load
-            # local_disk & Local_resource need to be reset after the check (if we start with a unmovable VM, the rest are never tested)
-            local_disk = None
-            local_resources = None
             h1_mem_load = (nodes[host[1]]["mem"] + vm["mem"]) / nodes[host[1]]["maxmem"]
             h1_deviation = h1_mem_load - average if h1_mem_load > average else average - h1_mem_load
             temp_full_deviation = part_of_deviation + h0_deviation + h1_deviation
@@ -393,6 +390,9 @@ def vm_migration(variants: list, cluster_obj: object) -> None:
             local_resources = (check_request.json()['data']['local_resources'])
         if local_disk or local_resources:
             logger.debug(f'The VM:{vm} has {local_disk if local_disk else local_resources if local_resources else ""}')
+            # local_disk & Local_resource need to be reset after the check (if we start with a unmovable VM, the rest are never tested)
+            local_disk = None
+            local_resources = None
             continue  # for variant in variants:
         else:
             # request migration
