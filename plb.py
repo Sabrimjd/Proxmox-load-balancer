@@ -353,6 +353,9 @@ def calculating(hosts: object, cluster_obj: object) -> list:
         for vm in hosts[host[0]].values():
             h0_mem_load = (nodes[host[0]]["mem"] - vm["mem"]) / nodes[host[0]]["maxmem"]
             h0_deviation = h0_mem_load - average if h0_mem_load > average else average - h0_mem_load
+            # local_disk & Local_resource need to be reset after the check (if we start with a unmovable VM, the rest are never tested)
+            local_disk = None
+            local_resources = None
             h1_mem_load = (nodes[host[1]]["mem"] + vm["mem"]) / nodes[host[1]]["maxmem"]
             h1_deviation = h1_mem_load - average if h1_mem_load > average else average - h1_mem_load
             temp_full_deviation = part_of_deviation + h0_deviation + h1_deviation
